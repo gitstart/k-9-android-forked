@@ -2,6 +2,7 @@ package app.k9mail.autodiscovery.autoconfig
 
 import app.k9mail.autodiscovery.api.DiscoveredServerSettings
 import app.k9mail.autodiscovery.api.DiscoveryResults
+import app.k9mail.core.common.mail.toEmailAddress
 import assertk.all
 import assertk.assertFailure
 import assertk.assertThat
@@ -50,11 +51,13 @@ class AutoconfigParserTest {
         </clientConfig>
         """.trimIndent()
 
+    private val irrelevantEmailAddress = "irrelevant@domain.example".toEmailAddress()
+
     @Test
     fun `minimal data`() {
         val inputStream = minimalConfig.byteInputStream()
 
-        val result = parser.parseSettings(inputStream, email = "user@domain.example")
+        val result = parser.parseSettings(inputStream, email = "user@domain.example".toEmailAddress())
 
         assertThat(result).isNotNull().all {
             prop(DiscoveryResults::incoming).containsExactly(
@@ -84,7 +87,7 @@ class AutoconfigParserTest {
     fun `real-world data`() {
         val inputStream = javaClass.getResourceAsStream("/2022-11-19-googlemail.com.xml")!!
 
-        val result = parser.parseSettings(inputStream, email = "test@gmail.com")
+        val result = parser.parseSettings(inputStream, email = "test@gmail.com".toEmailAddress())
 
         assertThat(result).isNotNull().all {
             prop(DiscoveryResults::incoming).containsExactly(
@@ -118,7 +121,7 @@ class AutoconfigParserTest {
             element("outgoingServer > username").text("%EMAILDOMAIN%")
         }
 
-        val result = parser.parseSettings(inputStream, email = "user@domain.example")
+        val result = parser.parseSettings(inputStream, email = "user@domain.example".toEmailAddress())
 
         assertThat(result).isNotNull().all {
             prop(DiscoveryResults::incoming).containsExactly(
@@ -154,7 +157,7 @@ class AutoconfigParserTest {
             element("incomingServer > username").prepend("<!-- comment -->")
         }
 
-        val result = parser.parseSettings(inputStream, email = "user@domain.example")
+        val result = parser.parseSettings(inputStream, email = "user@domain.example".toEmailAddress())
 
         assertThat(result.incoming).containsExactly(
             DiscoveredServerSettings(
@@ -174,7 +177,7 @@ class AutoconfigParserTest {
             element("incomingServer > authentication").insertBefore("<authentication></authentication>")
         }
 
-        val result = parser.parseSettings(inputStream, email = "user@domain.example")
+        val result = parser.parseSettings(inputStream, email = "user@domain.example".toEmailAddress())
 
         assertThat(result.incoming).containsExactly(
             DiscoveredServerSettings(
@@ -195,7 +198,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Missing 'emailProvider.id' attribute")
     }
@@ -207,7 +210,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Invalid 'emailProvider.id' attribute")
     }
@@ -219,7 +222,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Valid 'domain' element required")
     }
@@ -231,7 +234,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Valid 'domain' element required")
     }
@@ -243,7 +246,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Missing 'incomingServer' element")
     }
@@ -255,7 +258,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Missing 'outgoingServer' element")
     }
@@ -267,7 +270,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Missing 'hostname' element")
     }
@@ -279,7 +282,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Invalid 'hostname' value: 'in valid'")
     }
@@ -291,7 +294,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Missing 'port' element")
     }
@@ -303,7 +306,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Missing 'socketType' element")
     }
@@ -315,7 +318,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("No usable 'authentication' element found")
     }
@@ -327,7 +330,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Missing 'username' element")
     }
@@ -339,7 +342,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Invalid 'port' value: 'invalid'")
     }
@@ -351,7 +354,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Invalid 'port' value: '100000'")
     }
@@ -363,7 +366,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Unknown 'socketType' value: 'TLS'")
     }
@@ -375,7 +378,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Expected text, but got START_TAG")
     }
@@ -387,7 +390,7 @@ class AutoconfigParserTest {
         }
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "user@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Missing 'emailProvider' element")
     }
@@ -397,7 +400,7 @@ class AutoconfigParserTest {
         val inputStream = "invalid".byteInputStream()
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "irrelevant@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Error parsing Autoconfig XML")
     }
@@ -412,7 +415,7 @@ class AutoconfigParserTest {
             """.trimIndent().byteInputStream()
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "irrelevant@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Missing 'clientConfig' element")
     }
@@ -444,7 +447,7 @@ class AutoconfigParserTest {
             """.trimIndent().byteInputStream()
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "irrelevant@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("Error parsing Autoconfig XML")
     }
@@ -460,7 +463,7 @@ class AutoconfigParserTest {
             """.trimIndent().byteInputStream()
 
         assertFailure {
-            parser.parseSettings(inputStream, email = "irrelevant@domain.example")
+            parser.parseSettings(inputStream, irrelevantEmailAddress)
         }.isInstanceOf<AutoconfigParserException>()
             .hasMessage("End of document reached while reading element 'emailProvider'")
     }
