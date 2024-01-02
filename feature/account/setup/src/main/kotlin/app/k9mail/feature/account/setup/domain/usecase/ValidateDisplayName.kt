@@ -8,12 +8,13 @@ internal class ValidateDisplayName : DomainContract.UseCase.ValidateDisplayName 
 
     override fun execute(displayName: String): ValidationResult {
         return when {
-            displayName.isBlank() -> ValidationResult.Failure(ValidateDisplayNameError.EmptyDisplayName)
+            displayName.isEmpty() -> ValidationResult.Success
+            displayName.isBlank() -> ValidationResult.Failure(ValidateDisplayNameError.BlankDisplayName)
             else -> ValidationResult.Success
         }
     }
 
     sealed interface ValidateDisplayNameError : ValidationError {
-        data object EmptyDisplayName : ValidateDisplayNameError
+        data object BlankDisplayName : ValidateDisplayNameError
     }
 }

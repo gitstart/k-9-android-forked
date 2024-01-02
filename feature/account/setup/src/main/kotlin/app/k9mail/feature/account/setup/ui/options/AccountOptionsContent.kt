@@ -83,9 +83,8 @@ internal fun AccountOptionsContent(
                     text = state.displayName.value,
                     errorMessage = state.displayName.error?.toResourceString(resources),
                     onTextChange = { onEvent(Event.OnDisplayNameChanged(it)) },
-                    label = stringResource(id = R.string.account_setup_options_display_name_label),
+                    label = stringResource(id = R.string.account_setup_options_your_name_label),
                     contentPadding = defaultItemPadding(),
-                    isRequired = true,
                 )
             }
 

@@ -8,7 +8,6 @@ import app.k9mail.feature.account.setup.domain.entity.EmailDisplayCount
 import app.k9mail.feature.account.setup.domain.usecase.ValidateAccountName.ValidateAccountNameError
 import app.k9mail.feature.account.setup.domain.usecase.ValidateAccountName.ValidateAccountNameError.BlankAccountName
 import app.k9mail.feature.account.setup.domain.usecase.ValidateDisplayName.ValidateDisplayNameError
-import app.k9mail.feature.account.setup.domain.usecase.ValidateDisplayName.ValidateDisplayNameError.EmptyDisplayName
 import app.k9mail.feature.account.setup.domain.usecase.ValidateEmailSignature.ValidateEmailSignatureError
 import app.k9mail.feature.account.setup.domain.usecase.ValidateEmailSignature.ValidateEmailSignatureError.BlankEmailSignature
 
@@ -54,7 +53,8 @@ private fun ValidateAccountNameError.toAccountNameErrorString(resources: Resourc
 
 private fun ValidateDisplayNameError.toDisplayNameErrorString(resources: Resources): String {
     return when (this) {
-        is EmptyDisplayName -> resources.getString(R.string.account_setup_options_display_name_error_required)
+        is ValidateDisplayNameError.BlankDisplayName ->
+            resources.getString(R.string.account_setup_options_display_name_error_blank)
     }
 }
 
